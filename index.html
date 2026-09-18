@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layout de la Bodega — PROTECSA JSD S.A.S. | Presentación SENA</title>
+  <meta name="description" content="Aplicación interactiva 2D y 3D para la representación del layout logístico y flujo en U de la bodega de PROTECSA JSD S.A.S.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+/* Estilos Oficiales — Bodega PROTECSA JSD S.A.S. (Compatible con GitHub Pages) */
+:root {
+  --bg-dark: #0b1329;
+  --bg-card: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-glass: rgba(15, 23, 42, 0.92);
+
+  --accent-gold: #d4af37;
+  --accent-gold-glow: #f59e0b;
+  --accent-blue: #3b82f6;
+  --accent-emerald: #10b981;
+  --accent-rose: #ef4444;
+  --accent-purple: #8b5cf6;
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-gold: rgba(212, 175, 55, 0.4);
+
+  --shadow-lg: 0 12px 36px -5px rgba(0, 0, 0, 0.6);
+  --shadow-gold: 0 0 25px rgba(245, 158, 11, 0.3);
+  --radius-lg: 14px;
+  --radius-md: 8px;
+  --radius-sm: 5px;
+
+  --font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-family); overflow: hidden; height: 100vh; width: 100vw; }
+
+.app-header { background: rgba(11, 19, 41, 0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-gold); padding: 8px 20px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 100; }
+.brand-container { display: flex; align-items: center; gap: 12px; }
+.brand-logo { width: 38px; height: 38px; background: linear-gradient(135deg, #d4af37, #f59e0b); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: #000; font-size: 20px; box-shadow: var(--shadow-gold); }
+.brand-text h1 { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.5px; background: linear-gradient(90deg, #ffffff, #d4af37); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.brand-text p { font-size: 0.7rem; color: var(--text-muted); }
+.sena-badge { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: #34d399; padding: 4px 10px; border-radius: 16px; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+.header-actions { display: flex; align-items: center; gap: 10px; }
+.view-tabs { background: var(--bg-surface); padding: 3px; border-radius: 30px; display: flex; gap: 3px; border: 1px solid var(--border-subtle); }
+.tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 5px; }
+.tab-btn.active { background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-glow)); color: #0f172a; box-shadow: var(--shadow-gold); }
+
+.btn-action { background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border-subtle); padding: 6px 12px; border-radius: var(--radius-md); font-size: 0.78rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease; }
+.btn-action:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+.btn-action.gold-btn { background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-glow)); color: #0f172a; border: none; }
+.btn-action.gold-btn:hover { box-shadow: var(--shadow-gold); }
+
+.app-viewport { position: relative; width: 100vw; height: calc(100vh - 60px); overflow: hidden; }
+.view-container { width: 100%; height: 100%; }
+
+.view-2d-wrapper { padding: 8px 16px; height: 100%; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.view-2d-header { display: flex; align-items: center; justify-content: space-between; }
+.view-2d-header h2 { font-size: 1rem; font-weight: 700; }
+.view-2d-header p { font-size: 0.72rem; color: var(--text-muted); }
+
+.badge-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
+.badge-tag.gold { background: rgba(212, 175, 55, 0.15); color: var(--accent-gold); border: 1px solid var(--border-gold); }
+
+.view-2d-canvas-container { position: relative; flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); overflow: hidden; }
+.warehouse-svg { width: 100%; height: 100%; max-height: calc(100vh - 180px); object-fit: contain; }
+.zones-interactive-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+.zone-card-2d { position: absolute; pointer-events: auto; background: rgba(30, 41, 59, 0.82); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 6px; cursor: pointer; transition: all 0.25s ease; backdrop-filter: blur(4px); display: flex; flex-direction: column; justify-content: space-between; }
+.zone-card-2d:hover { transform: translateY(-2px) scale(1.02); border-color: var(--accent-gold); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5); z-index: 10; }
+.zone-card-2d.selected { border: 2px solid var(--accent-gold); box-shadow: var(--shadow-gold); background: rgba(212, 175, 55, 0.18); }
+.zone-card-2d.mandatory-highlight { border: 2px solid var(--accent-gold-glow); animation: pulseBorder 2s infinite; }
+
+@keyframes pulseBorder { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); } 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); } }
+
+.zone-card-header { display: flex; align-items: center; justify-content: space-between; }
+.zone-code { font-size: 0.6rem; font-weight: 800; background: rgba(255, 255, 255, 0.1); padding: 1px 4px; border-radius: 3px; color: var(--accent-gold); }
+.zone-icon { width: 12px; height: 12px; color: var(--text-muted); }
+.zone-title { font-size: 0.7rem; font-weight: 700; color: var(--text-main); margin-top: 2px; }
+
+.inspection-badges { display: flex; gap: 3px; margin-top: 3px; }
+.tag-ok { font-size: 0.55rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 1px 3px; border-radius: 3px; }
+.tag-warn { font-size: 0.55rem; background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 1px 3px; border-radius: 3px; }
+.sectors-mini { display: flex; flex-direction: column; gap: 1px; font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; }
+
+.view-2d-toolbar { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 6px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); height: 40px; }
+.filter-group { display: flex; align-items: center; gap: 6px; }
+.toolbar-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+.btn-chip { background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 4px 10px; border-radius: 14px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; }
+.btn-chip.active, .btn-chip:hover { background: var(--accent-gold); color: #000; font-weight: 700; }
+
+.switch-label { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; cursor: pointer; }
+.switch-label input { display: none; }
+.switch-custom { width: 32px; height: 18px; background: var(--bg-surface); border-radius: 10px; position: relative; transition: 0.3s; }
+.switch-custom::after { content: ''; position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: 0.3s; }
+.switch-label input:checked + .switch-custom { background: var(--accent-gold); }
+.switch-label input:checked + .switch-custom::after { transform: translateX(14px); }
+
+.zone-drawer { position: absolute; top: 12px; right: -420px; width: 380px; height: calc(100% - 24px); background: var(--bg-glass); backdrop-filter: blur(20px); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 20px; transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow-lg); overflow-y: auto; z-index: 50; }
+.zone-drawer.open { right: 12px; }
+.drawer-close-btn { position: absolute; top: 12px; right: 12px; background: rgba(255, 255, 255, 0.1); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.drawer-header { margin-bottom: 16px; }
+.drawer-zone-code { font-size: 0.75rem; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; }
+.drawer-title { font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
+.drawer-section { margin-bottom: 14px; background: rgba(255, 255, 255, 0.03); padding: 12px; border-radius: var(--radius-md); border: 1px solid rgba(255, 255, 255, 0.05); }
+.drawer-section h4 { font-size: 0.8rem; color: var(--accent-gold); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; }
+.drawer-section p { font-size: 0.8rem; line-height: 1.4; color: var(--text-muted); }
+
+.outcomes-box { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.outcome-item { padding: 6px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; }
+.outcome-item.success { background: rgba(16, 185, 129, 0.15); border-left: 3px solid var(--accent-emerald); color: #6ee7b7; }
+.outcome-item.warning { background: rgba(239, 68, 68, 0.15); border-left: 3px solid var(--accent-rose); color: #fca5a5; }
+
+.product-chips-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.prod-chip { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd; font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; }
+
+.modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 200; }
+.modal-backdrop.active { opacity: 1; pointer-events: auto; }
+.modal-card { background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); max-width: 620px; width: 90%; padding: 28px; box-shadow: var(--shadow-lg); position: relative; }
+.modal-title { font-size: 1.2rem; color: var(--accent-gold); font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.modal-body { font-size: 0.85rem; line-height: 1.5; color: var(--text-muted); }
+
+.benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+.benefit-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 12px; border-radius: var(--radius-md); text-align: center; }
+.benefit-icon { font-size: 20px; color: var(--accent-gold); margin-bottom: 6px; }
+.benefit-title { font-size: 0.75rem; font-weight: 800; color: var(--text-main); margin-bottom: 3px; }
+.benefit-desc { font-size: 0.65rem; color: var(--text-muted); }
+.modal-close-btn { margin-top: 20px; width: 100%; padding: 10px; background: var(--accent-gold); color: #000; font-weight: 800; border: none; border-radius: var(--radius-md); cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <!-- APP NAVBAR HEADER -->
+  <header class="app-header">
+    <div class="brand-container">
+      <div class="brand-logo">
+        <i data-lucide="shield-check"></i>
+      </div>
+      <div class="brand-text">
+        <h1>PROTECSA JSD S.A.S.</h1>
+        <p>Distribuidora & Comercializadora de Productos de Seguridad • Bogotá, Colombia</p>
+      </div>
+      <div class="sena-badge">
+        <i data-lucide="award"></i> Presentación SENA — Logística
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="view-tabs">
+        <button class="tab-btn active" id="btnTab2D" data-view="2d">
+          <i data-lucide="layout"></i> LAYOUT 2D
+        </button>
+        <button class="tab-btn" id="btnTab3D" data-view="3d">
+          <i data-lucide="box"></i> EXPLORAR BODEGA 3D
+        </button>
+      </div>
+
+      <button class="btn-action gold-btn" id="btnStartTour">
+        <i data-lucide="play"></i> INICIAR RECORRIDO
+      </button>
+      <button class="btn-action" id="btnDownloadSingleFile">
+        <i data-lucide="download"></i> DESCARGAR APLICACIÓN (.HTML)
+      </button>
+      <button class="btn-action" id="btnWhyUFlow">
+        <i data-lucide="help-circle"></i> ¿POR QUÉ FLUJO EN U?
+      </button>
+      <button class="btn-action" id="btnAllZones">
+        <i data-lucide="grid"></i> VER TODAS LAS ZONAS
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <main class="app-viewport">
+    <div id="view2dContainer" class="view-container"></div>
+    <div id="view3dContainer" class="view-container" style="display: none;"></div>
+
+    <!-- SIDE DRAWER / ZONE DETAIL MODAL -->
+    <aside class="zone-drawer" id="zoneDrawer">
+      <button class="drawer-close-btn" id="btnCloseDrawer">
+        <i data-lucide="x"></i>
+      </button>
+
+      <div class="drawer-header">
+        <span class="drawer-zone-code" id="drawerZoneCode">Z-00</span>
+        <h2 class="drawer-title" id="drawerZoneTitle">Seleccione una Zona</h2>
+      </div>
+
+      <div class="drawer-body">
+        <div class="drawer-section">
+          <h4><i data-lucide="info"></i> Descripción de la Zona</h4>
+          <p id="drawerDescription">-</p>
+        </div>
+
+        <div class="drawer-section">
+          <h4><i data-lucide="activity"></i> ¿Qué se hace en esta zona?</h4>
+          <p id="drawerWhatIsDone">-</p>
+          <div class="outcomes-box" id="drawerOutcomesBox" style="display: none;"></div>
+        </div>
+
+        <div class="drawer-section">
+          <h4><i data-lucide="star"></i> ¿Por qué es importante?</h4>
+          <p id="drawerImportance">-</p>
+        </div>
+
+        <div class="drawer-section">
+          <h4><i data-lucide="package"></i> Productos & Elementos Presentes</h4>
+          <div class="product-chips-list" id="drawerProductsList"></div>
+        </div>
+
+        <div class="drawer-section">
+          <h4><i data-lucide="user"></i> Actividad del Operario</h4>
+          <p id="drawerWorkerActivity">-</p>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- MODAL: ¿POR QUÉ SE UTILIZA UN FLUJO EN U? -->
+  <div class="modal-backdrop" id="modalWhyU">
+    <div class="modal-card">
+      <h2 class="modal-title">
+        <i data-lucide="git-commit"></i> ¿POR QUÉ SE UTILIZA UN FLUJO EN U EN PROTECSA JSD?
+      </h2>
+      <div class="modal-body">
+        <p>PROTECSA JSD S.A.S. utiliza una distribución en U porque permite organizar de manera sencilla la entrada y salida de mercancías. Los productos ingresan por la zona de recepción, pasan por inspección de calidad, clasificación y almacenamiento. Después, cuando se genera un pedido, la mercancía pasa a preparación, embalaje y expedición, regresando hacia el frente de la bodega para su despacho.</p>
+        
+        <p style="margin-top: 12px; font-weight: 600; color: #fff;">Esta distribución permite reducir desplazamientos innecesarios, facilitar el control de inventario y aprovechar mejor el espacio disponible.</p>
+
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <div class="benefit-icon"><i data-lucide="arrow-right-left"></i></div>
+            <div class="benefit-title">REDUCE DESPLAZAMIENTOS</div>
+            <div class="benefit-desc">Minimiza las distancias recorridas al tener entrada y salida en el mismo frente.</div>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon"><i data-lucide="check-circle-2"></i></div>
+            <div class="benefit-title">FACILITA EL CONTROL DE INVENTARIO</div>
+            <div class="benefit-desc">Flujo continuo sin cruce de productos entre proveedor y despacho.</div>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon"><i data-lucide="layout-grid"></i></div>
+            <div class="benefit-title">APROVECHA EL ESPACIO</div>
+            <div class="benefit-desc">Almacenamiento masivo al fondo y operaciones rápidas al frente.</div>
+          </div>
+        </div>
+      </div>
+      <button class="modal-close-btn" id="btnCloseWhyU">ENTENDIDO / CERRAR</button>
+    </div>
+  </div>
+
+  <!-- MODAL: VER TODAS LAS ZONAS -->
+  <div class="modal-backdrop" id="modalAllZones">
+    <div class="modal-card" style="max-width: 900px; max-height: 85vh; overflow-y: auto;">
+      <h2 class="modal-title"><i data-lucide="grid"></i> 16 ZONAS OPERATIVAS BODEGA PROTECSA JSD</h2>
+      <div id="allZonesGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px;"></div>
+      <button class="modal-close-btn" id="btnCloseAllZones" style="margin-top: 20px;">CERRAR VENTANA</button>
+    </div>
+  </div>
+
+  <!-- DEPENDENCIAS EXTERNAS CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- LÓGICA COMPLETA DE LA APLICACIÓN -->
+  <script src="js/bundle.js"></script>
+</body>
+</html>
